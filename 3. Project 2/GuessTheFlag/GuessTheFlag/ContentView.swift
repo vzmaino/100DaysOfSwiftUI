@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+struct FlagImage: View {
+    let flag: String
+
+    var body: some View {
+        Image(flag)
+            .renderingMode(.original)
+            .clipShape(Capsule())
+            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
+            .shadow(color: .white, radius: 2)
+    }
+}
+
 struct ContentView: View {
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
@@ -39,11 +51,6 @@ struct ContentView: View {
                         self.flagTapped(number)
                     }, label: {
                         FlagImage(flag: self.countries[number])
-                        Image(self.countries[number])
-                            .renderingMode(.original)
-                            .clipShape(Capsule())
-                            .overlay(Capsule().stroke(Color.black, lineWidth: 1))
-                            .shadow(color: .white, radius: 2)
                     })
                 }
                 
@@ -56,7 +63,7 @@ struct ContentView: View {
             }
         }
         .alert(isPresented: $showingScore) {
-            Alert(title: Text(scoreTitle), message: Text("Your score is ???"), dismissButton: .default(Text("Continue")) {
+            Alert(title: Text(scoreTitle), message: Text("Your score is \(userScore)"), dismissButton: .default(Text("Continue")) {
                 self.askQuestion()
             })
         }
@@ -68,7 +75,6 @@ struct ContentView: View {
             scoreTitle = "Correct"
         } else {
             scoreTitle = "Wrong! That's the flag of \(countries[number])"
-            scoreTitle = "Wrong"
             
             if userScore != 0 {
                 userScore -= 1
