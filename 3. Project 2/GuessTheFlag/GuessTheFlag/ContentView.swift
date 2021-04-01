@@ -19,13 +19,17 @@ struct FlagImage: View {
     }
 }
 
-struct ContentView: View {
+struct AnimatedChallengeView: View {
     
     @State private var countries = ["Estonia", "France", "Germany", "Ireland", "Italy", "Nigeria", "Poland", "Russia", "Spain", "UK", "US"].shuffled()
     @State private var correctAnswer = Int.random(in: 0...2)
     @State private var showingScore = false
     @State private var scoreTitle = ""
     @State private var userScore = 0
+    
+    @State private var flagAngle = [0.0, 0.0, 0.0]
+    @State private var flagOpacity = [1.0, 1.0, 1.0]
+    @State private var flagBlur: [CGFloat] = [0, 0, 0]
     
     var body: some View {
         
@@ -51,47 +55,83 @@ struct ContentView: View {
                         self.flagTapped(number)
                     }, label: {
                         FlagImage(flag: self.countries[number])
+                            .rotation3DEffect(.degrees(self.flagAngle[number]), axis: (x: 0, y: 1, z: 0))
+                            .opacity(self.flagOpacity[number])
+                            .blur(radius: self.flagBlur[number])
+                            .animation(.default)
                     })
                 }
                 
-                Text("Score: \(userScore)")
-                    .foregroundColor(.white)
-                    .font(.title)
-                    .fontWeight(.medium)
+                VStack {
+                    
+                    Text("Score: \(userScore)")
+                        .foregroundColor(.white)
+                        .font(.title)
+                        .fontWeight(.medium)
+                    
+                    Text(scoreTitle)
+                        .font(.title)
+                        .fontWeight(.medium)
+                        .foregroundColor(scoreTitle == "Correct answer!" ? Color.green : Color.red)
+                }
                 
                 Spacer()
             }
-        }
-        .alert(isPresented: $showingScore) {
-            Alert(title: Text(scoreTitle), message: Text("Your score is \(userScore)"), dismissButton: .default(Text("Continue")) {
-                self.askQuestion()
-            })
         }
     }
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             userScore += 1
-            scoreTitle = "Correct"
+            scoreTitle = "Correct answer!"
+            correctAnimation()
         } else {
             scoreTitle = "Wrong! That's the flag of \(countries[number])"
             
             if userScore != 0 {
                 userScore -= 1
             }
+            wrongAnimation()
         }
         
-        showingScore = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            askQuestion()
+        }
+        
     }
     
     func askQuestion() {
+        flagAngle = [0.0, 0.0, 0.0]
+        flagOpacity = [1.0, 1.0, 1.0]
+        flagBlur = [0, 0, 0]
+        scoreTitle = ""
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
     }
-}
+    
+    func correctAnimation() {
+        for flag in 0...2 {
+            if flag == correctAnswer {
+                flagAngle[flag] = 360.0
+            } else {
+                flagOpacity[flag] = 0.25
+            }
+        }
+    }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
+    func wrongAnimation() {
+        for flag in 0...2 {
+            if flag != correctAnswer {
+                flagBlur[flag] = 6
+            }
+        }
     }
 }
+
+struct AnimatedChallengeView_Previews: PreviewProvider {
+    static var previews: some View {
+        AnimatedChallengeView()
+    }
+}
+
+
