@@ -34,6 +34,8 @@ struct AstronautView: View {
                                     .frame(width: 60, height: 60)
                                     .clipShape(Circle())
                                     .overlay(Circle().stroke(Color.primary, lineWidth: 1))
+                                    .accessibility(hidden: true)
+                                //challenge day 76
                                 
                                 VStack(alignment: .leading) {
                                     Text(mission.displayName)
@@ -41,6 +43,8 @@ struct AstronautView: View {
                                     Text(mission.formattedeLauchDate)
                                         .foregroundColor(.secondary)
                                 }
+                                .accessibilityElement(children: .ignore)
+                                .accessibility(label: Text("\(mission.displayName). \(mission.formattedeLauchDate)"))
                                 
                                 Spacer()
                             }

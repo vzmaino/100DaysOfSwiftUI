@@ -30,11 +30,22 @@ struct ContentView: View {
                     .autocapitalization(.none)
                     .padding()
                 
-                List(usedWords, id: \.self) {
-                    Image(systemName: "\($0.count).circle")
-                    Text($0)
+                // Project 18 - Challenge 2 & 3
+                GeometryReader { listProxy in
+                    List(self.usedWords, id: \.self) { word in
+                        GeometryReader { itemProxy in
+                            HStack {
+                                Image(systemName: "\(word.count).circle")
+                                    // Project 18 - Challenge 3
+                                    .foregroundColor(self.getColor(listProxy: listProxy, itemProxy: itemProxy))
+                                Text(word)
+                            }
+                            // Project 18 - Challenge 2
+                            .frame(width: itemProxy.size.width, alignment: .leading)
+                            .offset(x: self.getOffset(listProxy: listProxy, itemProxy: itemProxy), y: 0)
+                        }
+                    }
                 }
-                .listStyle(GroupedListStyle())
                 
                 Spacer()
                 
@@ -53,6 +64,49 @@ struct ContentView: View {
                 Alert(title: Text(errorTitle), message: Text(errorMessage), dismissButton: .default(Text("OK")))
             }
         }
+    }
+    
+    // Project 18 - Challenge 2
+    func getOffset(listProxy: GeometryProxy, itemProxy: GeometryProxy) -> CGFloat {
+        let listHeight = listProxy.size.height
+        let listStart = listProxy.frame(in: .global).minY
+        let itemStart = itemProxy.frame(in: .global).minY
+
+        let itemPercent =  (itemStart - listStart) / listHeight * 100
+
+        let thresholdPercent: CGFloat = 60
+        let indent: CGFloat = 9
+
+        if itemPercent > thresholdPercent {
+            return (itemPercent - (thresholdPercent - 1)) * indent
+        }
+
+        return 0
+    }
+    
+    // Project 18 - Challenge 3
+    func getColor(listProxy: GeometryProxy, itemProxy: GeometryProxy) -> Color {
+        let itemPercent = getItemPercent(listProxy: listProxy, itemProxy: itemProxy)
+
+        let colorValue = Double(itemPercent / 100)
+
+        // varying from green to red going through yellow,
+        // using Color(red:green:blue:) as suggested
+        return Color(red: 2 * colorValue, green: 2 * (1 - colorValue), blue: 0)
+
+        // varying hue is easier to work with and offers more variety though
+        //return Color(hue: colorValue, saturation: 0.9, brightness: 0.9)
+    }
+
+    // Project 18 - Challenge 3
+    func getItemPercent(listProxy: GeometryProxy, itemProxy: GeometryProxy) -> CGFloat {
+        let listHeight = listProxy.size.height
+        let listStart = listProxy.frame(in: .global).minY
+        let itemStart = itemProxy.frame(in: .global).minY
+
+        let itemPercent =  (itemStart - listStart) / listHeight * 100
+
+        return itemPercent
     }
     
     func addNewWord() {

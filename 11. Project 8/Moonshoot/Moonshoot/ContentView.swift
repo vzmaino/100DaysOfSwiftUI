@@ -29,13 +29,15 @@ struct ContentView: View {
                         Text(changeCaption ? mission.formattedeLauchDate : mission.listCrew)
                     }
                 }
-                
+                .accessibilityElement(children: .ignore)
+                .accessibility(label: Text("\(mission.displayName). \(mission.formattedeLauchDate)"))
+                //challenge day 76
             }
             .navigationBarTitle("Moonshot")
             .navigationBarItems(trailing: Button(changeCaption ? "Show Crew" : "Show Dates") {
                 self.changeCaption.toggle()
             }
-            )
+            .accessibility(hidden: true))
         }
         
     }
