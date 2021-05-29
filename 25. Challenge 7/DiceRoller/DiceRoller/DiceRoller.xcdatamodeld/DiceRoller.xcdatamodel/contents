@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17709" systemVersion="20D91" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="DiceHistory" representedClassName="DiceHistory" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="value" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="DiceValues" inverseName="history" inverseEntity="DiceValues"/>
+    </entity>
+    <entity name="DiceValues" representedClassName="DiceValues" syncable="YES">
+        <attribute name="value" optional="YES" attributeType="Integer 32" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="history" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="DiceHistory" inverseName="value" inverseEntity="DiceHistory"/>
+    </entity>
+    <elements>
+        <element name="DiceHistory" positionX="-63" positionY="-18" width="128" height="74"/>
+        <element name="DiceValues" positionX="-63" positionY="0" width="128" height="59"/>
+    </elements>
+</model>
